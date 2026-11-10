@@ -1,0 +1,35 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+        <div class="card-gov shadow-sm">
+            <div class="card-header-gov text-center py-3">
+                <span class="fs-6 fw-bold">Sign In to Citizen Portal</span>
+            </div>
+            <div class="p-4 bg-white">
+                <form action="{{ url_for('login') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Email Address</label>
+                        <input type="email" name="email" class="form-control rounded-1" required placeholder="name@domain.com">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Account Password</label>
+                        <input type="password" name="password" class="form-control rounded-1" required placeholder="••••••••">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 rounded-1 py-2 mb-3">
+                        Access Account
+                    </button>
+                </form>
+
+                <div class="border-top pt-3 text-center small text-muted">
+                    New citizen user? <a href="{{ url_for('register') }}" class="text-decoration-none fw-semibold">Register here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

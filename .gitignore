@@ -1,0 +1,9 @@
+﻿venv/
+__pycache__/
+*.pyc
+.env
+nagrikone.db
+static/uploads/*
+!static/uploads/.gitkeep
+.vscode/
+.idea/

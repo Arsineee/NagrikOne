@@ -1,0 +1,45 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card-gov shadow-sm">
+            <div class="card-header-gov text-center py-3">
+                <span class="fs-6 fw-bold">Citizen Registration</span>
+            </div>
+            <div class="p-4 bg-white">
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Full Legal Name <span class="text-danger">*</span></label>
+                        <input type="text" name="full_name" class="form-control rounded-1" required placeholder="As per official ID card">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Email Address <span class="text-danger">*</span></label>
+                        <input type="email" name="email" class="form-control rounded-1" required placeholder="name@domain.com">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Phone Number</label>
+                        <input type="tel" name="phone" class="form-control rounded-1" placeholder="10-digit mobile number">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Choose Password <span class="text-danger">*</span></label>
+                        <input type="password" name="password" class="form-control rounded-1" required placeholder="Minimum 6 characters">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 rounded-1 py-2 mb-3" style="background-color: var(--gov-navy); border-color: var(--gov-navy);">
+                        Create Citizen Profile
+                    </button>
+                </form>
+
+                <div class="border-top pt-3 text-center small text-muted">
+                    Already registered? <a href="{{ url_for('login') }}" class="text-decoration-none fw-semibold">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
