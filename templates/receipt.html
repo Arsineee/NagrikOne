@@ -1,0 +1,113 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<style>
+@media print {
+    /* Hide navigation bar, footer, buttons, card borders and alerts */
+    header, footer, .navbar-gov, .card-header-gov, .btn, .alert, .theme-toggle-btn {
+        display: none !important;
+    }
+    body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .container {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .card-gov {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+    }
+    #printable-receipt {
+        border: 2px solid #000 !important;
+        padding: 24px !important;
+        margin: 0 auto !important;
+        color: #000 !important;
+    }
+    #printable-receipt * {
+        color: #000 !important;
+    }
+}
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card-gov shadow-sm">
+            <div class="card-header-gov d-flex justify-content-between align-items-center py-2 px-3">
+                <span class="fw-semibold">
+                    <i class="bi bi-file-earmark-check-fill me-2 text-success"></i>Official Acknowledgment Slip & Receipt
+                </span>
+                <div class="d-flex align-items-center gap-2">
+                    <button onclick="window.print()" class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size: 0.78rem;">
+                        <i class="bi bi-printer me-1"></i>Print Slip
+                    </button>
+                    <a href="{{ url_for('citizen_dashboard') }}" class="btn btn-sm btn-outline-secondary py-1 px-2" style="font-size: 0.78rem;">
+                        Back
+                    </a>
+                </div>
+            </div>
+            <div class="p-4 bg-white" id="printable-receipt">
+                <div class="text-center border-bottom pb-3 mb-3">
+                    <h5 class="fw-bold text-dark mb-1">NAGRIK ONE - CITIZEN SERVICE PORTAL</h5>
+                    <p class="text-muted small mb-0">Government Public Service Delivery & Acknowledgment Voucher</p>
+                </div>
+
+                <div class="row g-3 mb-3 small">
+                    <div class="col-sm-6">
+                        <label class="text-muted d-block">Application Reference Number</label>
+                        <span class="font-monospace fw-bold fs-6">{{ application['application_number'] }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted d-block">Current Lifecycle Status</label>
+                        <span class="gov-tag gov-tag-{{ application['status']|lower }}">{{ application['status'] }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted d-block">Citizen Full Name</label>
+                        <span class="fw-semibold">{{ application['citizen_name'] }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted d-block">Registered Contact Details</label>
+                        <span>{{ application['citizen_email'] }} | {{ application['citizen_phone'] }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted d-block">Service Requested</label>
+                        <span class="fw-semibold">{{ application['service_name'] }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted d-block">Filing Timestamp</label>
+                        <span>{{ application['created_at'] }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted d-block">Father / Guardian Name</label>
+                        <span>{{ applicant_data.get('father_name', 'N/A') }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted d-block">Declared Annual Income</label>
+                        <span>₹{{ applicant_data.get('declared_income', 'N/A') }}</span>
+                    </div>
+                    <div class="col-12">
+                        <label class="text-muted d-block">Residential Address</label>
+                        <span>{{ applicant_data.get('address', 'N/A') }}</span>
+                    </div>
+                    {% if application['officer_remarks'] %}
+                    <div class="col-12 border-top pt-2">
+                        <label class="text-muted d-block">Competent Authority Remarks</label>
+                        <span class="fst-italic">{{ application['officer_remarks'] }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="border-top pt-3 d-flex justify-content-between align-items-center text-muted small">
+                    <span>Statutory Processing Fee: ₹{{ "%.2f"|format(application['processing_fee']) }}</span>
+                    <span class="font-monospace" style="font-size: 0.72rem;">Digitally Signed & Verified System Voucher</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

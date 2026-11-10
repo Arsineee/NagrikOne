@@ -1,0 +1,248 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<style>
+/* Enclosed 3-Stage Stepper Box */
+.step-container-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    margin: 14px 0 16px 0;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background-color: rgba(255, 255, 255, 0.02);
+}
+[data-bs-theme="light"] .step-container-box {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: #f8f9fa;
+}
+
+/* Step Node (Circle + Text) */
+.step-node {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+.step-node-circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+.step-node-circle.done {
+    background-color: #157347;
+}
+.step-node-circle.active {
+    background-color: #0d6efd;
+}
+.step-node-circle.pending {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.4);
+}
+[data-bs-theme="light"] .step-node-circle.pending {
+    border: 1px solid #ced4da;
+    color: #adb5bd;
+}
+
+.step-node-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+.step-node-label.done {
+    color: #00c853;
+}
+.step-node-label.active {
+    color: #38bdf8;
+}
+.step-node-label.pending {
+    color: var(--gov-text-muted, #8a99ad);
+}
+
+/* Clean Line Connecting the Steps */
+.step-connector-line {
+    flex-grow: 1;
+    height: 1px;
+    margin: 0 16px;
+    background-color: rgba(255, 255, 255, 0.14);
+}
+[data-bs-theme="light"] .step-connector-line {
+    background-color: rgba(0, 0, 0, 0.12);
+}
+
+/* Status Outline Badges */
+.status-tag-approved {
+    border: 1px solid #198754;
+    color: #20c997;
+    background: transparent;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    letter-spacing: 0.5px;
+}
+.status-tag-rejected {
+    border: 1px solid #dc3545;
+    color: #ea868f;
+    background: transparent;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    letter-spacing: 0.5px;
+}
+.status-tag-review, .status-tag-submitted {
+    border: 1px solid #0d6efd;
+    color: #6ea8fe;
+    background: transparent;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    letter-spacing: 0.5px;
+}
+</style>
+
+<div class="row g-4">
+    <!-- Left Column: Service Catalog -->
+    <div class="col-lg-4">
+        <div class="card-gov shadow-sm">
+            <div class="card-header-gov d-flex justify-content-between align-items-center py-2 px-3">
+                <span class="fw-semibold">Select Online Service</span>
+                <span class="badge bg-secondary font-monospace" style="font-size: 0.72rem;">Active</span>
+            </div>
+            <div class="p-3">
+                {% for s in services %}
+                <div class="border rounded-2 p-3 mb-3 bg-transparent" style="border-color: rgba(255,255,255,0.12) !important;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <a href="{{ url_for('apply_service', service_id=s['service_id']) }}" class="fw-bold text-primary text-decoration-none" style="font-size: 0.95rem;">
+                            {{ s['service_name'] }}
+                        </a>
+                        <span class="badge rounded-pill border font-monospace text-muted px-2 py-1" style="font-size: 0.72rem;">
+                            ₹{{ "%.1f"|format(s['processing_fee']) }}
+                        </span>
+                    </div>
+                    <p class="text-muted small mb-0" style="font-size: 0.78rem;">{{ s['description'] }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: My Submitted Applications -->
+    <div class="col-lg-8">
+        <div class="card-gov shadow-sm">
+            <div class="card-header-gov d-flex justify-content-between align-items-center py-2 px-3">
+                <span class="fw-semibold">My Submitted Applications</span>
+                <span class="badge border font-monospace text-muted" style="font-size: 0.72rem;">Total: {{ applications|length }}</span>
+            </div>
+            <div class="p-3">
+                {% for a in applications %}
+                {% set st = a['status'] %}
+                <div class="border rounded-2 p-3 mb-3 bg-transparent" style="border-color: rgba(255,255,255,0.14) !important;">
+                    <!-- Top Row: Ref and Badge -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="small">
+                            <span class="text-muted">Application Ref No: </span>
+                            <span class="font-monospace fw-bold text-primary">{{ a['application_number'] }}</span>
+                        </div>
+                        <div>
+                            {% if st == 'APPROVED' %}
+                            <span class="badge rounded-1 status-tag-approved">APPROVED</span>
+                            {% elif st == 'REJECTED' %}
+                            <span class="badge rounded-1 status-tag-rejected">REJECTED</span>
+                            {% elif st == 'UNDER_REVIEW' %}
+                            <span class="badge rounded-1 status-tag-review">UNDER REVIEW</span>
+                            {% else %}
+                            <span class="badge rounded-1 status-tag-submitted">SUBMITTED</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Subtle Horizontal Separator -->
+                    <div style="border-top: 1px solid rgba(255, 255, 255, 0.12); margin-top: 8px;"></div>
+
+                    <!-- 3-Stage Stepper Box (Matching Pic 2) -->
+                    <div class="step-container-box">
+                        <!-- Step 1: Submitted -->
+                        <div class="step-node">
+                            <span class="step-node-circle done"><i class="bi bi-check-lg"></i></span>
+                            <span class="step-node-label done">1. Submitted</span>
+                        </div>
+
+                        <div class="step-connector-line"></div>
+
+                        <!-- Step 2: Verification -->
+                        <div class="step-node">
+                            <span class="step-node-circle {% if st in ['UNDER_REVIEW', 'APPROVED', 'REJECTED'] %}done{% else %}active{% endif %}">
+                                {% if st in ['UNDER_REVIEW', 'APPROVED', 'REJECTED'] %}
+                                    <i class="bi bi-check-lg"></i>
+                                {% else %}
+                                    <i class="bi bi-circle"></i>
+                                {% endif %}
+                            </span>
+                            <span class="step-node-label {% if st in ['UNDER_REVIEW', 'APPROVED', 'REJECTED'] %}done{% else %}active{% endif %}">
+                                2. Verification
+                            </span>
+                        </div>
+
+                        <div class="step-connector-line"></div>
+
+                        <!-- Step 3: Disposal -->
+                        <div class="step-node">
+                            {% if st == 'APPROVED' %}
+                                <span class="step-node-circle done"><i class="bi bi-check-lg"></i></span>
+                                <span class="step-node-label done">3. Disposal</span>
+                            {% elif st == 'REJECTED' %}
+                                <span class="step-node-circle done"><i class="bi bi-x-lg"></i></span>
+                                <span class="step-node-label done">3. Disposal</span>
+                            {% else %}
+                                <span class="step-node-circle pending">3</span>
+                                <span class="step-node-label pending">3. Disposal</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Details and Actions -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25 small text-muted">
+                        <div style="font-size: 0.78rem;">
+                            <span><strong>Service:</strong> {{ a['service_name'] }}</span>
+                            <span class="mx-1">&bull;</span>
+                            <span>Filing Date: {{ a['created_at'] }}</span>
+                        </div>
+                        <div class="d-flex gap-2 mt-2 mt-sm-0 align-items-center">
+                            <a href="{{ url_for('view_receipt', app_id=a['application_id']) }}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center py-1 px-2" style="font-size: 0.74rem;">
+                                <i class="bi bi-file-earmark-text me-1"></i> Acknowledgment Slip
+                            </a>
+                            <form action="{{ url_for('delete_application', app_id=a['application_id']) }}" method="POST" class="d-inline m-0 p-0" onsubmit="return confirm('Permanently withdraw and delete this application and its uploaded documents?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center py-1 px-2" style="font-size: 0.74rem;">
+                                    <i class="bi bi-trash3 me-1"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Official Remarks -->
+                    {% if a['officer_remarks'] %}
+                    <div class="mt-2 p-2 rounded small border-start border-3 border-primary" style="background-color: rgba(255,255,255,0.03); font-size: 0.8rem;">
+                        <strong class="text-white">Competent Authority Remarks:</strong> 
+                        <span class="text-muted">{{ a['officer_remarks'] }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted small">
+                    <i class="bi bi-folder2-open display-5 d-block mb-2 text-secondary"></i>
+                    No submitted applications found. Choose a service on the left to apply.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

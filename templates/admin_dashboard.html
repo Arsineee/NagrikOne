@@ -1,0 +1,71 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card-gov p-3 border-start border-4 border-primary">
+            <span class="text-muted small text-uppercase fw-semibold">Total Applications Lodged</span>
+            <h3 class="fw-bold my-1 text-dark">{{ total_apps }}</h3>
+            <small class="text-muted">Across all citizen service schemes</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-gov p-3 border-start border-4 border-success">
+            <span class="text-muted small text-uppercase fw-semibold">Registered Citizens</span>
+            <h3 class="fw-bold my-1 text-dark">{{ total_citizens }}</h3>
+            <small class="text-muted">Active authenticated citizen profiles</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-gov p-3 border-start border-4 border-warning">
+            <span class="text-muted small text-uppercase fw-semibold">Designated Officers</span>
+            <h3 class="fw-bold my-1 text-dark">{{ total_officers }}</h3>
+            <small class="text-muted">Verification and scrutiny authorities</small>
+        </div>
+    </div>
+</div>
+
+<div class="card-gov shadow-sm">
+    <div class="card-header-gov d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">System Audit Trail & Application State Transitions</span>
+        <span class="badge bg-secondary font-monospace" style="font-size: 0.75rem;">AUDIT TRAIL</span>
+    </div>
+    <div class="p-3 bg-white">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0 small">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 80px;">Log ID</th>
+                        <th style="width: 170px;">Timestamp</th>
+                        <th>Performed By</th>
+                        <th>Application Ref</th>
+                        <th>Transition</th>
+                        <th>Remarks / Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td class="font-monospace">#{{ log['history_id'] }}</td>
+                        <td class="text-muted">{{ log['changed_at'] }}</td>
+                        <td class="fw-semibold">{{ log['officer_name'] }}</td>
+                        <td class="font-monospace fw-semibold">{{ log['application_number'] }}</td>
+                        <td>
+                            {% if log['previous_status'] %}
+                                <span class="gov-tag gov-tag-{{ log['previous_status']|lower }}">{{ log['previous_status'] }}</span>
+                                <i class="bi bi-arrow-right mx-1 text-muted"></i>
+                            {% endif %}
+                            <span class="gov-tag gov-tag-{{ log['new_status']|lower }}">{{ log['new_status'] }}</span>
+                        </td>
+                        <td class="text-muted">{{ log['remarks'] or 'No remarks recorded' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">No audit trail records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

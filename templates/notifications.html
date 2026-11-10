@@ -1,0 +1,51 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card-gov shadow-sm">
+            <div class="card-header-gov d-flex justify-content-between align-items-center py-2 px-3">
+                <span class="fw-semibold d-flex align-items-center gap-2">
+                    <i class="bi bi-bell-fill text-warning"></i>Official Notifications & Alerts
+                </span>
+                <div class="d-flex align-items-center gap-2">
+                    {% if notifications %}
+                    <form action="{{ url_for('clear_notifications') }}" method="POST" class="d-inline m-0 p-0" onsubmit="return confirm('Clear all notifications?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center py-1 px-2" style="font-size: 0.78rem; line-height: 1.2;">
+                            <i class="bi bi-trash3 me-1"></i>Clear All
+                        </button>
+                    </form>
+                    {% endif %}
+                    <a href="{{ url_for('citizen_dashboard') if session.get('role_name') == 'CITIZEN' else url_for('officer_dashboard') }}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center py-1 px-2" style="font-size: 0.78rem; line-height: 1.2;">
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+            <div class="p-3 bg-white">
+                {% for n in notifications %}
+                <div class="border rounded-1 p-3 mb-2 {% if n['is_read'] == 0 %}border-primary bg-light{% endif %}">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <strong class="text-dark small d-flex align-items-center gap-2">
+                            <i class="bi bi-info-circle-fill text-primary"></i>
+                            {{ n['title'] }}
+                        </strong>
+                        <span class="text-muted small" style="font-size: 0.75rem;">{{ n['created_at'] }}</span>
+                    </div>
+                    <p class="small text-muted mb-2">{{ n['message'] }}</p>
+                    {% if n['application_id'] %}
+                    <a href="{{ url_for('view_receipt', app_id=n['application_id']) }}" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.72rem;">
+                        <i class="bi bi-file-earmark-text me-1"></i>View Acknowledgment Slip
+                    </a>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted small">
+                    <i class="bi bi-bell-slash fs-2 d-block mb-2 text-secondary"></i>
+                    No notifications received yet.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

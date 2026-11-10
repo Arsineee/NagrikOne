@@ -1,0 +1,47 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<div class="card-gov">
+    <div class="card-header-gov d-flex justify-content-between align-items-center">
+        <span>Officer Scrutiny & Review Console</span>
+        <span class="badge bg-secondary font-monospace" style="font-size: 0.75rem;">ROLE: OFFICER</span>
+    </div>
+    <div class="p-3 bg-white">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0 small">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ref Number</th>
+                        <th>Applicant</th>
+                        <th>Service Requested</th>
+                        <th>Filing Date</th>
+                        <th>Current Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in applications %}
+                    <tr>
+                        <td class="font-monospace fw-semibold">{{ a['application_number'] }}</td>
+                        <td>{{ a['citizen_name'] }}</td>
+                        <td>{{ a['service_name'] }}</td>
+                        <td>{{ a['created_at'] }}</td>
+                        <td>
+                            <span class="gov-tag gov-tag-{{ a['status']|lower }}">{{ a['status'] }}</span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('review_application', app_id=a['application_id']) }}" class="btn btn-sm btn-outline-primary py-0 px-2 rounded-1">
+                                Scrutinize
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">No pending service applications in queue.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

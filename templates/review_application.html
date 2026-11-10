@@ -1,0 +1,84 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card-gov mb-4">
+            <div class="card-header-gov d-flex justify-content-between align-items-center">
+                <span>Application Scrutiny Dossier: {{ application['application_number'] }}</span>
+                <span class="gov-tag gov-tag-{{ application['status']|lower }}">{{ application['status'] }}</span>
+            </div>
+            <div class="p-4 bg-white">
+                <div class="row g-3 mb-4 border-bottom pb-3">
+                    <div class="col-sm-6">
+                        <label class="text-muted small d-block">Applicant Name</label>
+                        <span class="fw-semibold">{{ application['citizen_name'] }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted small d-block">Service Scheme</label>
+                        <span class="fw-semibold">{{ application['service_name'] }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted small d-block">Father / Guardian Name</label>
+                        <span class="fw-semibold">{{ applicant_details.get('father_name', 'N/A') }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted small d-block">Annual Family Income</label>
+                        <span class="fw-semibold">₹{{ applicant_details.get('declared_income', 'N/A') }}</span>
+                    </div>
+                    <div class="col-12">
+                        <label class="text-muted small d-block">Residential Address</label>
+                        <span>{{ applicant_details.get('address', 'N/A') }}</span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold small text-muted text-uppercase mb-2">Attached Documents Verification</h6>
+                    <div class="border rounded-1 p-3 bg-light">
+                        {% for doc in documents %}
+                        <div class="d-flex justify-content-between align-items-center py-1">
+                            <div>
+                                <i class="bi bi-file-earmark-check text-success me-2"></i>
+                                <span>{{ doc['document_type'] }} ({{ (doc['file_size_bytes']/1024)|round(1) }} KB)</span>
+                            </div>
+                            <a href="{{ url_for('view_document', filename=doc['file_path']) }}" target="_blank" class="btn btn-sm btn-outline-secondary py-1 px-3 rounded-1">
+                                <i class="bi bi-box-arrow-up-right me-1"></i> Open Document
+                            </a>
+                        </div>
+                        {% else %}
+                        <span class="text-muted small">No supporting document records found.</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Disposal Decision <span class="text-danger">*</span></label>
+                        <select name="status" class="form-select rounded-1" required>
+                            <option value="UNDER_REVIEW" {% if application['status'] == 'UNDER_REVIEW' %}selected{% endif %}>UNDER_REVIEW (Mark Under Scrutiny)</option>
+                            <option value="CORRECTION_REQUIRED" {% if application['status'] == 'CORRECTION_REQUIRED' %}selected{% endif %}>CORRECTION_REQUIRED (Return for Applicant Clarification)</option>
+                            <option value="APPROVED" {% if application['status'] == 'APPROVED' %}selected{% endif %}>APPROVED (Grant Certificate/Service)</option>
+                            <option value="REJECTED" {% if application['status'] == 'REJECTED' %}selected{% endif %}>REJECTED (Decline Application)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Competent Authority Remarks / Reasons</label>
+                        <textarea name="remarks" class="form-control rounded-1" rows="3" placeholder="Enter findings, verification notes, or reason for disposal.">{{ application['officer_remarks'] or '' }}</textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <a href="{{ url_for('officer_dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-1">
+                            Back to Application Queue
+                        </a>
+                        <button type="submit" class="btn btn-success btn-sm px-4 rounded-1">
+                            Record Official Decision
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
