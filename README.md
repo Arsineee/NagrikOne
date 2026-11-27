@@ -29,3 +29,13 @@ NagrikOne/
 ├── schema.sql            # MySQL relational database schema
 ├── requirements.txt      # Python dependencies
 └── Procfile              # Process startup configuration
+
+## Azure Deployment Configuration
+
+- **Hosting Platform:** Azure App Service (Linux, Python 3.11, Central India)
+- **Service Plan:** Basic (B1 — 1 vCPU, 1.75 GB RAM)
+- **WSGI Server:** Gunicorn bound to `0.0.0.0:8000` (`WEBSITES_PORT=8000`)
+- **Database:** Azure Database for MySQL (Flexible Server) over SSL
+- **Object Storage:** Azure Blob Storage for citizen document uploads
+- **CI/CD Pipeline:** Automated build and deployment via GitHub Actions (`.github/workflows/main_nagrikone.yml`) using Azure OneDeploy
+- **Build Automation:** `SCM_DO_BUILD_DURING_DEPLOYMENT=true` (Oryx builds `requirements.txt` on push)
